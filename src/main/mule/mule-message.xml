@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8a5ce8ee-0b07-4b28-af72-23e600a4f0fe" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="mule-messageFlow" doc:id="c6955258-f144-4266-867f-57e248b0ec4a" >
+		<http:listener doc:name="Listener" doc:id="b18e0e84-4ca0-407a-b08e-3a62f1932baa" config-ref="HTTP_Listener_config" path="/message">
+			<http:response>
+				<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	genre : vars.genre
+}]]]></http:headers>
+			</http:response>
+		</http:listener>
+		<logger level="INFO" doc:name="Message" doc:id="f2c6eb94-5ff4-4e85-9b01-5370fbab4c66" message="The message is: #[message]"/>
+		<logger level="INFO" doc:name="Attributes" doc:id="7084be6b-57d7-4b3a-b291-6e145521e88d" message="Attributes are: #[attributes]" />
+		<ee:transform doc:name="Set Payload" doc:id="cfe1fb73-d432-4579-97ea-b06650226494">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  name: "Miles Davis"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Payload" doc:id="4d00aad6-8fc9-417c-a06b-72b86ae7225d" message="The Payload is #[payload]"/>
+		<set-variable value="Jazz" doc:name="Set Variable" doc:id="cd6ecc38-e16a-4571-b212-6040b5ec2d86" variableName="genre"/>
+	</flow>
+</mule>
